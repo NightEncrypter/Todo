@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Todo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link rel='stylesheet' href='{% static "style.css" %}'>
+   
+</head>
+<body  >
+
+  <div class="overlay">
+
+    <form class="input-container form">
+ 
+        <h2 class="label form-head"><span>
+          Add Todos
+        </span>
+          <button class="x"><i class="fa-solid fa-xmark icon"></i></button> 
+        </h2>
+
+        <div class="main-form">
+         <div class="group">
+          <h4 class="label" >Title</h4>
+          <input type='text' name='title' id='search_add' class="add title_input" >
+         </div>
+         <div class="group">
+          <h4 class="label">Desc</h4>
+          <textarea name='desc' id='' cols='30' rows='3'class="add desc_input" ></textarea>
+        </div>
+
+      <button class="submit group">Submit</button>
+
+        </div>
+        
+    
+      </form>
+  </div>
+
+   <div class="container">
+
+    <div class="collection">
+    <h1 class="main-head">Todo</h1>
+     
+        
+          
+               <!-- <div> -->
+                <button class="add-todo">Add Todo</button>
+               <!-- </div> -->
+              <ul class="lists">
+
+              
+         
+            
+                   </ul>
+            </div>
+           
+        </div>
+       
+  
+   <!-- <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script> -->
+   <!-- <script src="https://unpkg.com/feather-icons"></script>  -->
+  
+   <script>
+
+
+
+    const add_todo=document.querySelector('.add-todo');
+    const overlay=document.querySelector('.overlay');
+    const x=document.querySelector('.x');
+
+let url='http://localhost:3001/api/';
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+   // feather.replace()
+
+
+const lists=document.querySelector(".lists")
+
+list()
+
+let activeItem;
+
+async function getTodos()
+{
+  const res=await fetch(`${url}todos`)
+  const json_res=await res.json();
+  return json_res;
+}
+
+   async function list(){
+lists.innerHTML=""
+let response= await getTodos()
+//console.log(json_res)
+
+/*addlist=json_res.map(v=>{
+    return `
+    <li><span>
+         ${v.title}
+        </span>
+        <div class="edit-del">
+            <a href='' class="edit">
+              <i class="fa-solid fa-marker"></i>
+            </a>
+            <a href='' class="del">
+              <i class="fa-solid fa-trash" ></i>
+            </a>
+        </div>
+      </li>`
+}).join('')
+*/
+//console.log(addlist)
+//lists.innerHTML=addlist
+
+let addlist=''
+response.forEach(v=>{
+    addlist=`  <li class="todo">
+      <div >
+        <div class="todo-container">
+         <span class="title">
+       ${v.title}
+            </span>
+            <div class="edit-del">
+                <a  class="edit">
+
+                  <i class="fa-solid fa-marker icon"></i>
+                </a>
+                <a  class="del">
+                  <i class="fa-solid fa-trash icon " key=${v.id}></i>
+                </a>
+            </div>
+           
+        </div>
+        <div>
+          <h5 class="desc-heading">Description</h5>
+         <p class="desc">
+         ${v.desc}
+         </p> 
+        </div>
+     
+      </div>
+        </li>`
+
+  lists.innerHTML+=addlist  
+
+})
+//return json_res
+
+
+
+
+const lists_all=document.querySelectorAll(".todo")
+const edits_all=document.querySelectorAll(".edit")
+const title=document.querySelector(".title_input")
+const desc=document.querySelector(".desc_input")
+
+response.forEach((v,i)=>{
+  edits_all[i].addEventListener("click",async(e)=>{
+
+    title.value= v.title
+    desc.value=v.desc
+
+    activeItem=v
+    overlay.classList.add('active')
+  
+
+
+  })
+})
+
+
+lists_all.forEach(todo=>{
+
+
+//Delete Todo
+todo.addEventListener("click",(e)=>{
+if(e.target.parentElement.classList.contains("del")){
+  
+  const id=e.target.getAttribute("key")
+  deleteTodo(id)
+
+  setTimeout(()=>{
+    e.target.parentElement.parentElement.parentElement.parentElement.parentElement.style.transform="translateX(-80px)"
+  e.target.parentElement.parentElement.parentElement.parentElement.parentElement.style.opacity="0"
+setTimeout(()=>{
+  e.target.parentElement.parentElement.parentElement.parentElement.parentElement.remove()
+
+},1000)
+  },500)
+
+getTodos()
+        }
+      })
+
+})
+   }
+
+
+//Create new todo
+   async function createTodo(data){
+let mainUrl=`${url}create`;
+    if(activeItem!=null){
+mainUrl=`${url}update/${activeItem.id}`
+    }
+   
+
+    const res =await fetch(`${mainUrl}`,{
+      method:"POST",
+      headers:{
+        "Content-type":"application/json",
+        'X-CSRFToken': csrftoken
+      },
+      body:JSON.stringify(data)
+    })
+
+    activeItem=null
+   }
+
+//Delete Todo 
+async function deleteTodo(id){
+await fetch(`${url}delete/${id}`,{
+  method:"DELETE"
+})
+   }
+
+
+
+
+
+   
+   // Add Todo
+   document.querySelector('.form').addEventListener("submit",async(e)=>{
+     e.preventDefault()
+const desc=document.querySelector('.desc_input');
+const title=document.querySelector('.title_input');
+
+
+let descVal=desc.value
+let titleVal=title.value
+
+//console.log(desc,title)
+await createTodo({desc:descVal,title:titleVal});
+desc.value='';
+title.value='';
+overlay.classList.remove('active')
+
+list();
+
+   })
+
+
+      add_todo.addEventListener("click",()=>{
+   overlay.classList.add('active')
+      })
+      x.addEventListener("click",()=>{
+   overlay.classList.remove('active')
+      })
+
+
+
+   </script>
+</body>
+</html>

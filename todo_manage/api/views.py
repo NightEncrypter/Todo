@@ -15,7 +15,7 @@ def test(request):
 # LIST ITEMS
 @api_view(["GET"])
 def getTodos(request):
-    getTodos=Todo.objects.all()
+    getTodos=Todo.objects.all().order_by("-id")
     
     serialized=TodosSerialized(getTodos,many=True)
     return Response(serialized.data)
