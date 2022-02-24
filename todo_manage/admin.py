@@ -1,4 +1,3 @@
-from turtle import title
 from django.contrib import admin
 
 from todo_manage.models import Todo
