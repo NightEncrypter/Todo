@@ -47,23 +47,25 @@
 
     <div class="collection">
     <h1 class="main-head">Todo</h1>
-     
-        
-          
-               <!-- <div> -->
-                <button class="add-todo">Add Todo</button>
-               <!-- </div> -->
-              <ul class="lists">
-
               
-         
+                <button class="add-todo">Add Todo</button>
+
+                <div>
+                  <div class='loader'>
+
+                  </div>
+                </div>
             
+              
+              <ul class="lists">      
                    </ul>
             </div>
            
         </div>
        
-  
+  <!-- <div class="overlay-2"> -->
+
+  <!-- </div> -->
    <!-- <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script> -->
    <!-- <script src="https://unpkg.com/feather-icons"></script>  -->
   
@@ -97,15 +99,22 @@ let url='http://127.0.0.1:3001/api/';
 
 
 const lists=document.querySelector(".lists")
+const overlay_2=document.querySelector(".overlay-2")
+const loader=document.querySelector(".loader")
 
 list()
 
 let activeItem;
 
+
+
 async function getTodos()
 {
+loaderActive()
   const res=await fetch(`${url}todos`)
   const json_res=await res.json();
+
+   loaderDeactive()
   return json_res;
 }
 
@@ -277,7 +286,14 @@ list();
    overlay.classList.remove('active')
       })
 
-
+      function loaderActive(){
+        //overlay_2.classList.add("active")
+        loader.classList.add("active")
+      }
+      function loaderDeactive(){
+        //overlay_2.classList.remove("active")
+        loader.classList.remove("active")
+      }
 
    </script>
 </body>
