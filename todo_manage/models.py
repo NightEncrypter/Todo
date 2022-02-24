@@ -1,8 +1,4 @@
-from email.policy import default
-from turtle import title
-from xmlrpc.client import Boolean
 from django.db import models
-from django.forms import BooleanField
 
 # Create your models here.
 class Todo(models.Model):
