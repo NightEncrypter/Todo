@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-96m1w9lg_-11@q0t)jihxyy^r6bh0yf41@g6qck(pzngn4^88d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["todosmania.herokuapp.com","127.0.0.1"]
 
@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -80,9 +81,15 @@ WSGI_APPLICATION = 'base.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+            'ENGINE': 'djongo',
+            'NAME': 'todo',
+            'CLIENT': {
+                # 'host':  "mongodb+srv://manas:manas12345@moviemaniac.icnap.mongodb.net/moviemaniac_app?retryWrites=true&w=majority",
+                "authMechanism":'SCRAM-SHA-1',
+                "host":"mongodb+srv://manas:manas123@cluster0.ylvco.mongodb.net/todo?retryWrites=true&w=majority"
+                
+            }  
+        }
 }
 
 
